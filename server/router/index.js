@@ -8,12 +8,10 @@ const questionController = new QuestionController();
 
 // paper Routes
 router.post('/paper/create', paperController.create);
-router.put('/paper/update/:id',paperController.update);
-router.delete('/paper/delete',paperController.delete);
 
 // question Routes
 router.post("/add/question", questionController.add);
-router.get("/question/:difficulty", questionController.questions);
+router.get("/question", questionController.questions);
 
 
 export default router;
