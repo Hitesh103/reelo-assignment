@@ -11,6 +11,12 @@ Clone the repo.
 git clone https://github.com/Hitesh103/reelo-assignment
 ```
 
+Install the npm packages
+
+```
+npm i
+```
+
 To Run the app.
 
 ```
