@@ -1,4 +1,5 @@
 import express from "express";
+import cors from 'cors';
 import bodyParser from "body-parser";
 import { connectDb } from "./config/db.js";
 import apiRoutes from './router/index.js';
@@ -7,6 +8,8 @@ dotenv.config();
 
 const app = express();
 
+// Middleware
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
