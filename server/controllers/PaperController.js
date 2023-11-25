@@ -14,50 +14,106 @@ class PaperController {
       };
 
       // Calculate the number of questions for each difficulty based on distribution
-      let easyCount = Math.ceil(totalMarks * difficultyDistribution.easy);
-      let mediumCount = Math.ceil(totalMarks * difficultyDistribution.medium);
-      let hardCount = Math.ceil(totalMarks * difficultyDistribution.hard);
+      let easyMarks = Math.floor(totalMarks * difficultyDistribution.easy);
+      let mediumMarks = Math.floor(totalMarks * difficultyDistribution.medium);
+      let hardMarks = Math.floor(totalMarks * difficultyDistribution.hard);
+
+      let easyCount = Math.floor(easyMarks / 2);
+      let mediumCount = Math.floor(mediumMarks / 3);
+      let hardCount = Math.floor(hardMarks / 5);
+
+      let easyReminder = easyMarks % 2;
+      let mediumReminder = mediumMarks % 3;
+      let hardReminder = hardMarks % 5;
+
+      if (easyReminder > 0) {
+        const easyQueRemaining = await Question.aggregate([
+          { $match: { subject: subject, difficulty: "Easy", marks: easyReminder } },
+          { $sample: { size: 1 } },
+        ]);
+
+        paper.questions.push(...easyQueRemaining);
+      }
+
+      if (mediumReminder > 0) {
+        const mediumQueRemaining = await Question.aggregate([
+          { $match: { subject: subject, difficulty: "Medium", marks: mediumReminder } },
+          { $sample: { size: 1 } },
+        ]);
+
+        paper.questions.push(...mediumQueRemaining);
+      }
+
+      if (hardReminder > 0) {
+        const hardQueRemaining = await Question.aggregate([
+          { $match: { subject: subject, difficulty: "Hard", marks: hardReminder } },
+          { $sample: { size: 1 } },
+        ]);
+
+        paper.questions.push(...hardQueRemaining);
+      }
 
       // Get questions from database
-      const easyQue = await Question.find({
-        subject: subject,
-        difficulty: "Easy",
-      });
+      const easyQue = await Question.aggregate([
+        { $match: { subject: subject, difficulty: "Easy", marks: 2 } },
+        { $sample: { size: easyCount } },
+      ]);
 
-      const mediumQue = await Question.find({
-        subject: subject,
-        difficulty: "Medium",
-      });
+      const mediumQue = await Question.aggregate([
+        { $match: { subject: subject, difficulty: "Medium", marks: 3 } },
+        { $sample: { size: mediumCount } },
+      ]);
 
-      const hardQue = await Question.find({
-        subject: subject,
-        difficulty: "Hard",
-      });
+      const hardQue = await Question.aggregate([
+        { $match: { subject: subject, difficulty: "Hard", marks: 5 } },
+        { $sample: { size: hardCount } },
+      ]);
 
-      easyQue.sort((a, b) => b.marks - a.marks);
-      mediumQue.sort((a, b) => b.marks - a.marks);
-      hardQue.sort((a, b) => b.marks - a.marks);
+      paper.questions.push(...easyQue);
+      paper.questions.push(...mediumQue);
+      paper.questions.push(...hardQue);
 
-      var ind = 0;
-      while ((easyCount)-(easyQue[0].marks) > 0) {
-        easyCount -= easyQue[0].marks;
-        paper.questions.push(easyQue[0]);
-        ind++;
+      // console.log(paper);
+
+      // Initialize variables to store total marks for each difficulty level
+      let easyTotalMarks = 0;
+      let mediumTotalMarks = 0;
+      let hardTotalMarks = 0;
+      let combinedTotalMarks = 0;
+
+      // Iterate through each question in the paper
+      for (const question of paper.questions) {
+        const marks = question.marks;
+
+        // Check the difficulty level and add marks to the respective total
+        if (question.difficulty === "Easy") {
+          easyTotalMarks += marks;
+        } else if (question.difficulty === "Medium") {
+          mediumTotalMarks += marks;
+        } else if (question.difficulty === "Hard") {
+          hardTotalMarks += marks;
+        }
+
+        // Add marks to the combined total
+        combinedTotalMarks += marks;
       }
 
-       ind = 0;
-      while ((mediumCount)-(mediumQue[0].marks) > 0) {
-        mediumCount -= mediumQue[0].marks;
-        paper.questions.push(mediumQue[0]);
-        ind++;
+      let remainingQueMarks = totalMarks - combinedTotalMarks;
+
+      if (remainingQueMarks > 0) {
+        const remainingQue = await Question.aggregate([
+          { $match: { subject: subject, marks: 1 , difficulty : "Easy" } },
+          { $sample: { size: remainingQueMarks } },
+        ]);
+
+        paper.questions.push(...remainingQue);
       }
 
-       ind = 0;
-      while ((hardCount)-(hardQue[0].marks) > 0) {
-        hardCount -= hardQue[0].marks;
-        paper.questions.push(hardQue[0]);
-        ind++;
-      }
+      // Display the results
+      // console.log("Easy Total Marks:", easyTotalMarks);
+      // console.log("Medium Total Marks:", mediumTotalMarks);
+      // console.log("Hard Total Marks:", hardTotalMarks);
+      // console.log("Combined Total Marks:", combinedTotalMarks);
 
       res.status(200).json({ paper });
     } catch (error) {
@@ -66,13 +122,6 @@ class PaperController {
     }
   }
 
-  update(req, res) {
-    res.send("update paper");
-  }
-
-  delete(req, res) {
-    res.send("delete paper");
-  }
 }
 
 export default PaperController;
