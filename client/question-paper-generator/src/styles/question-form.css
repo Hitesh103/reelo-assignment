@@ -1,0 +1,57 @@
+body {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(9, 75, 121, 1) 0%,
+    rgba(0, 212, 255, 1) 100%
+  );
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+}
+
+.question-container {
+  background-color: white;
+  color: black;
+  overflow: hidden;
+  width: 600px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  justify-content: center;
+  align-items: center;
+  margin-left: 600px;
+  margin-top: 100px;
+  height: 700px;
+}
+
+/* Add these styles to your existing CSS */
+textarea,
+input,
+select {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 8px; /* Adjust padding for input elements */
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold; /* Make label text bold */
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold; /* Make button text bold */
+}
+
+button:hover {
+  background-color: #45a049;
+}
