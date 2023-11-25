@@ -71,7 +71,7 @@ const PaperForm = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/paper/create", {
+      const response = await fetch("https://qpg-ju6x.onrender.com/api/paper/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
