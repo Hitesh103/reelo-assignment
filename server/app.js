@@ -13,8 +13,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-app.listen(process.env.PORT, async () => {
-    console.log("Server Started at " + process.env.PORT);
+app.listen(5000, async () => {
+    console.log("Server Started at " + 5000);
+    console.log("Connecting to MongoDB...");
     connectDb();
 });
 
